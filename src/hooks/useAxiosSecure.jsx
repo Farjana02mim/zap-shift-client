@@ -2,7 +2,7 @@ import axios from "axios"
 import useAuth from "./useAuth"
 
 const axiosSecure = axios.create({
-    baseURL: import.meta.env.VITE_SERVER_URL || "http://localhost:3000",
+    baseURL: import.meta.env.VITE_SERVER_URL || "http://localhost:5000",
   })
 
 const useAxiosSecure = () => {
