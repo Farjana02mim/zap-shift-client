@@ -9,7 +9,8 @@ import SocialLogin from "../SocialLogin/SocialLogin"
 const Login = () => {
   const { signInUser, loading } = useAuth()
   const navigate = useNavigate()
-  const location = useLocation()
+  const location = useLocation();
+  //console.log('in the login page',location);
   const from = location.state?.from || "/"
 
   const {
@@ -105,8 +106,8 @@ const Login = () => {
 
         {/* Register */}
         <p className="text-center text-sm mt-6">
-          Don&apos;t have an account?{" "}
-          <Link to="/register" className="text-blue-500 font-medium hover:underline">
+          Don't have an account?{" "}
+          <Link state={location.state} to="/register" className="text-blue-500 font-medium hover:underline">
             Register
           </Link>
         </p>

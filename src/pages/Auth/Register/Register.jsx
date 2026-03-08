@@ -3,6 +3,8 @@ import { useForm } from 'react-hook-form'
 import useAuth from '../../../hooks/useAuth';
 import { Link } from 'react-router-dom'
 import SocialLogin from '../SocialLogin/SocialLogin';
+import axios from 'axios';
+import { useLocation, useNavigate } from 'react-router';
 
 const Register = () => {
   const {
@@ -11,21 +13,47 @@ const Register = () => {
     formState: { errors },
   } = useForm();
 
-  const { registerUser } = useAuth();
+  const { registerUser , updateUserProfile} = useAuth();
 
-  const handleRegistration = async (data) => {
-    try {
-      const result = await registerUser(data.email, data.password);
+  const location=useLocation();
+    const navigate = useNavigate();
+    console.log('location in register',location);
+
+  const handleRegistration = (data) => {
+    console.log(data.photo[0]);
+    const profileImg = data.photo[0];
+    
+    registerUser(data.email, data.password).then(result=>{
       console.log(result.user);
       alert("Registration Successful 🎉");
-    } catch (error) {
+
+      //store the image and get the photo url 
+      const formData = new FormData();
+    formData.append("image", profileImg);
+      const image_API_URL= `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_image_host}`
+    axios.post(image_API_URL,formData).then(res=>{
+      console.log('after image upload',res.data.data.url);
+      //update user profile
+      const userProfile={
+        displayName: data.name,
+        photoURL: res.data.data.url
+      }
+      updateUserProfile(userProfile)
+      .then(()=>{
+        console.log('user profile updated done');
+        useNavigate(location.state || '/');
+      })
+      .catch(error=>console.log(error))
+    })
+      
+    }).catch (error=> {
       console.log(error);
       alert(error.message || "Registration failed");
-    }
+    })
   }
 
   return (
-    <div className="min-h-screen flex items-center text-center justify-center">
+    <div className="min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
         
         {/* Heading */}
@@ -38,6 +66,34 @@ const Register = () => {
 
         {/* Form */}
         <form onSubmit={handleSubmit(handleRegistration)} className="space-y-4">
+
+          {/* Image */}
+          <div>
+            <label className="label font-medium">Photo</label><br />
+            <input
+              type="file"
+              placeholder="Enter your photo"
+              className="file-input"
+              {...register('photo', { required: "Photo is required" })}
+            />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+            )}
+          </div>
+
+          {/* Name */}
+          <div>
+            <label className="label font-medium">Name</label>
+            <input
+              type="text"
+              placeholder="Enter your name"
+              className="input input-bordered w-full"
+              {...register('name', { required: "Name is required" })}
+            />
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+            )}
+          </div>
 
           {/* Email */}
           <div>
@@ -90,7 +146,7 @@ const Register = () => {
         {/* Login Link */}
         <p className="text-center text-sm mt-6">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-500 font-medium hover:underline">
+          <Link state={location.state} to="/login" className="text-blue-500 font-medium hover:underline">
             Login
           </Link>
         </p>
