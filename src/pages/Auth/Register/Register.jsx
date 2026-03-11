@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import SocialLogin from '../SocialLogin/SocialLogin';
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router';
+import useAxiosSecure from '../../../hooks/useAxiosSecure';
 
 const Register = () => {
   const {
@@ -17,14 +18,19 @@ const Register = () => {
 
   const location=useLocation();
     const navigate = useNavigate();
-    console.log('location in register',location);
+
+    const axiosSecure = useAxiosSecure();
+
+
+    //console.log('location in register',location);
 
   const handleRegistration = (data) => {
-    console.log(data.photo[0]);
+    //console.log(data.photo[0]);
     const profileImg = data.photo[0];
     
-    registerUser(data.email, data.password).then(result=>{
-      console.log(result.user);
+    registerUser(data.email, data.password)
+      .then(result=>{
+      //console.log(result.user);
       alert("Registration Successful 🎉");
 
       //store the image and get the photo url 
@@ -32,16 +38,35 @@ const Register = () => {
     formData.append("image", profileImg);
       const image_API_URL= `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_image_host}`
     axios.post(image_API_URL,formData).then(res=>{
-      console.log('after image upload',res.data.data.url);
+
+      const photoURL = res.data.data.url;
+
+      // create user in the database
+
+      const userInfo = {
+        email: data.email,
+        displayName: data.displayName,
+        photoURL: photoURL
+
+      }
+
+      axiosSecure.post('/users', userInfo)
+      .then(res=>{
+        if(res.data.insertedId){
+          console.log('user created in the database');
+        }
+      })
+
+
       //update user profile
       const userProfile={
         displayName: data.name,
-        photoURL: res.data.data.url
+        photoURL: photoURL
       }
       updateUserProfile(userProfile)
       .then(()=>{
         console.log('user profile updated done');
-        useNavigate(location.state || '/');
+        navigate(location.state || '/');
       })
       .catch(error=>console.log(error))
     })
