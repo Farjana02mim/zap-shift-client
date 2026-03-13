@@ -11,7 +11,7 @@ const useRole = () => {
     queryKey: ['user-role', user?.email], // fixed typo: quryKey -> queryKey
     queryFn: async () => {
       const res = await axiosSecure.get(`/users/${user.email}/role`);
-      return res.data;
+      return res.data?.role || 'user';
     },
     enabled: !!user?.email // ✅ only run query if user email exists
   })
