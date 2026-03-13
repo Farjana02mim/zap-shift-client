@@ -1,32 +1,22 @@
+import { useQuery } from '@tanstack/react-query'; // ✅ add this
 import { useEffect, useState } from "react"
 import useAuth from "./useAuth"
 import useAxiosSecure from "./useAxiosSecure"
 
 const useRole = () => {
-  const { user, loading } = useAuth()
+  const { user } = useAuth()
   const axiosSecure = useAxiosSecure()
-  const [role, setRole] = useState(null)
-  const [roleLoading, setRoleLoading] = useState(true)
+  
+  const { isLoading, data: role = 'user' } = useQuery({  // removed roleLoading (not standard)
+    queryKey: ['user-role', user?.email], // fixed typo: quryKey -> queryKey
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/users/${user.email}/role`);
+      return res.data;
+    },
+    enabled: !!user?.email // ✅ only run query if user email exists
+  })
 
-  useEffect(() => {
-    if (!loading && user?.email) {
-      axiosSecure.get(`/users/role/${user.email}`)
-        .then(res => {
-          setRole(res.data.role) // admin | student | tutor
-          setRoleLoading(false)
-        })
-        .catch(err => {
-          console.error("Failed to fetch role:", err)
-          setRole(null)
-          setRoleLoading(false)
-        })
-    } else {
-      setRole(null)
-      setRoleLoading(false)
-    }
-  }, [user, loading, axiosSecure])
-
-  return [role, roleLoading]
+  return { role, isLoading }
 }
 
 export default useRole
