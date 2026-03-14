@@ -60,6 +60,7 @@ const MyParcels = () => {
             <th>Parcel Name</th>
             <th>Cost</th>
             <th>Payment</th>
+            <th>Tracking Id</th>
             <th>Delivery Status</th>
             <th>Actions</th>
           </tr>
@@ -73,6 +74,7 @@ const MyParcels = () => {
               <td>{parcel.parcelName}</td>
 
               <td>${parcel.cost}</td>
+              
 
               {/* PAYMENT STATUS */}
               <td>
@@ -86,6 +88,8 @@ const MyParcels = () => {
                   </Link>
                 )}
               </td>
+
+              <td>${parcel.trackingId}</td>
 
               {/* DELIVERY STATUS */}
               <td>
