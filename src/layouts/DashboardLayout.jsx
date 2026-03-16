@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link, NavLink, Outlet } from 'react-router'
 import { CiDeliveryTruck } from "react-icons/ci";
-import { FaMotorcycle, FaRegCreditCard, FaUsers } from "react-icons/fa";
+import { FaMotorcycle, FaRegCreditCard, FaTasks, FaUsers } from "react-icons/fa";
 import { RiEBikeFill } from "react-icons/ri";
 import useRole from '../hooks/useRole';
 
@@ -51,6 +51,32 @@ const DashboardLayout = () => {
             <span className="is-drawer-close:hidden">
       Payment History </span></NavLink>
         </li>
+
+        {/* riders only links */}
+
+        {
+          role === 'rider' &&  <>
+             <li>
+            <NavLink className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="AssignedDeliveries" to='/dashboard/assigned-deliveries'> <FaTasks />
+            <span className="is-drawer-close:hidden">
+      </span></NavLink>
+        </li>
+
+        {/* <li>
+            <NavLink className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="AssignRiders" to='/dashboard/assign-riders'> <RiEBikeFill />
+            <span className="is-drawer-close:hidden">
+      Assign Riders</span></NavLink>
+        </li>
+
+        <li>
+            <NavLink className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Users Management" to='/dashboard/users-management'> <FaUsers />
+            <span className="is-drawer-close:hidden">
+      Users Management</span></NavLink>
+        </li> */}
+          </>
+        }
+
+        {/* admin only links */}
 
         {
           role === 'admin' &&  <>
