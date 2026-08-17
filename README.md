@@ -134,12 +134,6 @@ npm run lint      # Run ESLint
 
 ---
 
-## 📸 Screenshots
-
-Add screenshots of your application here.
-
-
----
 
 ## 🎯 Future Improvements
 
